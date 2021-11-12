@@ -27,6 +27,7 @@ public class SqlRuDateTimeParser implements DateTimeParser {
     @Override
     public LocalDateTime parse(String parse) {
         LocalDate date = null;
+        LocalDateTime localDateTime = null;
         String[] dateTime = parse.split(",");
         String dateStr = dateTime[0].trim();
         String timeStr = dateTime[1].trim();
@@ -42,6 +43,9 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         } else if (dayMonthYear.length == 1) {
             date = LOCAL_DATE_MAP.get(dayMonthYear[0].trim());
         }
-        return LocalDateTime.of(date, time);
+        if (date != null) {
+            localDateTime = LocalDateTime.of(date, time);
+        }
+        return localDateTime;
     }
 }
