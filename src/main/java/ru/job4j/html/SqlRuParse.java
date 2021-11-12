@@ -12,10 +12,10 @@ public class SqlRuParse {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
                 "dd.MM.yyyy HH:mm");
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        Elements row = doc.select(".postslisttopic");
-        for (Element td : row) {
-            Element parent = td.parent();
-            System.out.println(parent.child(1).attr("href"));
+        Elements rows = doc.select(".postslisttopic");
+        for (Element row : rows) {
+            Element parent = row.parent();
+            System.out.println(row.child(0).attr("href"));
             System.out.println(parent.child(1).text());
             String date = parent.child(5).text();
             System.out.println("Дата: " + date);
