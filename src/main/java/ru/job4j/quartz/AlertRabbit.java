@@ -11,24 +11,24 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
-    private final String propsFile;
-    private Properties prs;
+    private final Properties prs;
 
     public AlertRabbit(String propsFile) {
-        this.propsFile = propsFile;
         this.prs = LoadProps.getLoadedPropsFrom(propsFile);
     }
 
     public static void main(String[] args) {
-        var rabbit = new AlertRabbit("rabbit.properties");
-        try (Connection dbConnect = rabbit.connect()) {
+        var alertRabbit = new AlertRabbit("rabbit.properties");
+        try (Connection dbConnect = alertRabbit.connect()) {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
             data.put("store", dbConnect);
             JobDetail job = newJob(Rabbit.class).usingJobData(data).build();
+            String interval = alertRabbit.prs.getProperty("rabbit.interval");
+            int intervalInt = Integer.parseInt(interval);
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(rabbit.getInterval())
+                    .withIntervalInSeconds(intervalInt)
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
@@ -37,41 +37,21 @@ public class AlertRabbit {
             scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
-        } catch (SchedulerException | InterruptedException | SQLException se) {
+        } catch (Exception se) {
             se.printStackTrace();
         }
 
     }
 
-    private Connection connect() {
-        Connection cn = null;
-        try {
-            Class.forName(prs.getProperty("driver-class-name"));
-            cn = DriverManager.getConnection(
-                    prs.getProperty("url"),
-                    prs.getProperty("username"),
-                    prs.getProperty("password")
-            );
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+    private Connection connect() throws ClassNotFoundException, SQLException {
+        Connection cn;
+        Class.forName(prs.getProperty("driver-class-name"));
+        cn = DriverManager.getConnection(
+                prs.getProperty("url"),
+                prs.getProperty("username"),
+                prs.getProperty("password")
+        );
         return cn;
-    }
-
-    private int getInterval() {
-        String interval = prs.getProperty("rabbit.interval");
-        int intervalInt = 0;
-        try {
-            intervalInt = Integer.parseInt(interval);
-            if (intervalInt <= 0) {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Wrong interval parameter in rabbit.properties");
-        }
-        return intervalInt;
     }
 
     public static class Rabbit implements Job {
@@ -81,15 +61,17 @@ public class AlertRabbit {
         }
 
         @Override
-        public void execute(JobExecutionContext context) throws JobExecutionException {
+        public void execute(JobExecutionContext context) {
             System.out.println("Rabbit runs here ...");
             Connection cn = (Connection) context.getJobDetail().getJobDataMap().get("store");
-            try (PreparedStatement ps = cn.prepareStatement(
-                    "insert into rabbit (created_date) values(?);")) {
-                ps.setDate(1, new Date(System.currentTimeMillis()));
-                ps.execute();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            if (cn != null) {
+                try (PreparedStatement ps = cn.prepareStatement(
+                        "insert into rabbit (created_date) values(?);")) {
+                    ps.setDate(1, new Date(System.currentTimeMillis()));
+                    ps.execute();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         }
     }
