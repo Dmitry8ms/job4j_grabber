@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Post {
-    int id;
-    String title;
-    String link;
-    String description;
-    LocalDateTime created;
+    private int id;
+    private String title;
+    private String link;
+    private String description;
+    private LocalDateTime created;
 
     public int getId() {
         return id;
@@ -59,7 +59,8 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return id == post.id && title.equals(post.title) && link.equals(post.link) && created.equals(post.created);
+        return id == post.id && title.equals(post.title) && link.equals(post.link)
+                && created.equals(post.created);
     }
 
     @Override
