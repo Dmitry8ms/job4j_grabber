@@ -30,24 +30,28 @@ public class SqlRuParse {
             Document doc = Jsoup.connect(httpStr).get();
             Elements rows = doc.select(".postslisttopic");
             for (Element row : rows) {
-                Post post = new Post();
-                Element parent = row.parent();
                 String vacancyLink = row.child(0).attr("href");
-                String title = parent.child(1).text();
-                String date = parent.child(5).text();
-                if (date != null) {
-                    localDateTime = new SqlRuDateTimeParser().parse(date);
-                }
-                Document vacancyDoc = Jsoup.connect(vacancyLink).get();
-                Elements elements = vacancyDoc.select(".msgTable");
-                String descr = elements.get(0).child(0).child(1).child(1).text();
-                post.setTitle(title);
-                post.setLink(vacancyLink);
-                post.setDescription(descr);
-                post.setCreated(localDateTime);
+                Post post = detail(vacancyLink);
                 posts.add(post);
             }
         }
         return posts;
+    }
+
+    private static Post detail(String vacancyLink) throws IOException {
+        Post post = new Post();
+        Document vacancyDoc = Jsoup.connect(vacancyLink).get();
+        Elements elements = vacancyDoc.select(".msgTable");
+        String title = elements.get(0).child(0).child(0).text();
+        title = title.replace(" [new]", "");
+        String grabbedDate = elements.get(0).child(0).child(2).child(0).ownText();
+        grabbedDate = grabbedDate.substring(0, grabbedDate.indexOf(" []"));
+        LocalDateTime created = new SqlRuDateTimeParser().parse(grabbedDate);
+        String descr = elements.get(0).child(0).child(1).child(1).text();
+        post.setTitle(title);
+        post.setLink(vacancyLink);
+        post.setDescription(descr);
+        post.setCreated(created);
+        return post;
     }
 }
