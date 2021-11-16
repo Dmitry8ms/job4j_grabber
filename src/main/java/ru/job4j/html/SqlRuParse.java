@@ -31,11 +31,16 @@ public class SqlRuParse implements Parse {
     }
 
     @Override
-    public List<Post> list(String link) throws IOException {
+    public List<Post> list(String link) {
         List<Post> posts = new LinkedList<>();
         for (int i = 1; i <= 5; i++) {
             String sendLink = link + i;
-            Document doc = Jsoup.connect(sendLink).get();
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(sendLink).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Elements rows = doc.select(".postslisttopic");
             for (Element row : rows) {
                 String vacancyLink = row.child(0).attr("href");
@@ -47,16 +52,20 @@ public class SqlRuParse implements Parse {
     }
 
     @Override
-    public Post detail(String vacancyLink) throws IOException {
+    public Post detail(String vacancyLink) {
         Post post = new Post();
-        Document vacancyDoc = Jsoup.connect(vacancyLink).get();
-        Elements elements = vacancyDoc.select(".msgTable");
-        String title = elements.get(0).child(0).child(0).text();
+        Document vacancyDoc = null;
+        try {
+            vacancyDoc = Jsoup.connect(vacancyLink).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String title = vacancyDoc.select(".messageHeader").get(0).text();
         title = title.replace(" [new]", "");
-        String grabbedDate = elements.get(0).child(0).child(2).child(0).ownText();
+        String grabbedDate = vacancyDoc.select(".msgFooter").get(0).ownText();
         grabbedDate = grabbedDate.substring(0, grabbedDate.indexOf(" []"));
         LocalDateTime created = dateTimeParser.parse(grabbedDate);
-        String descr = elements.get(0).child(0).child(1).child(1).text();
+        String descr = vacancyDoc.select(".msgBody").get(1).text();
         post.setTitle(title);
         post.setLink(vacancyLink);
         post.setDescription(descr);
