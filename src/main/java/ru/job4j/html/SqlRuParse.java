@@ -5,9 +5,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.grabber.Parse;
+import ru.job4j.grabber.PsqlStore;
 import ru.job4j.grabber.model.Post;
 import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.SqlRuDateTimeParser;
+import ru.job4j.quartz.LoadProps;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -22,11 +24,17 @@ public class SqlRuParse implements Parse {
     }
     public static void main(String[] args) throws Exception {
         var parser = new SqlRuDateTimeParser();
-        SqlRuParse sqlRuParse = new SqlRuParse(parser);
-        String httpStr = "https://www.sql.ru/forum/job-offers/";
-        List<Post> posts = sqlRuParse.list(httpStr);
-        for (var post : posts) {
-            System.out.println(post);
+        try (var psql = new PsqlStore(LoadProps.getLoadedPropsFrom("grabber.properties"))) {
+            SqlRuParse sqlRuParse = new SqlRuParse(parser);
+            String httpStr = "https://www.sql.ru/forum/job-offers/";
+            List<Post> posts = sqlRuParse.list(httpStr);
+            for (var post : posts) {
+                psql.save(post);
+            }
+            System.out.println(psql.findById(266));
+            for (var post : psql.getAll()) {
+                System.out.println(post);
+            }
         }
     }
 
