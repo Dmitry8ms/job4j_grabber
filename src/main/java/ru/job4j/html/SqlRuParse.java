@@ -9,7 +9,7 @@ import ru.job4j.grabber.PsqlStore;
 import ru.job4j.grabber.model.Post;
 import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.SqlRuDateTimeParser;
-import ru.job4j.quartz.LoadProps;
+import ru.job4j.grabber.utils.LoadProps;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -22,6 +22,7 @@ public class SqlRuParse implements Parse {
     public SqlRuParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
     }
+
     public static void main(String[] args) throws Exception {
         var parser = new SqlRuDateTimeParser();
         try (var psql = new PsqlStore(LoadProps.getLoadedPropsFrom("grabber.properties"))) {
