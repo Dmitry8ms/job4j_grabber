@@ -54,10 +54,23 @@ public class SqlRuParse implements Parse {
             for (Element row : rows) {
                 String vacancyLink = row.child(0).attr("href");
                 Post post = detail(vacancyLink);
-                posts.add(post);
+                if (isJavaJob(post)) {
+                    posts.add(post);
+                }
             }
         }
         return posts;
+    }
+
+    private boolean isJavaJob(Post post) {
+        boolean rsl = false;
+        String title = post.getTitle();
+        if ((title.contains("Java") || title.contains("java"))
+            && (!title.contains("Javascript") && !title.contains("javascript")
+            && !title.contains("JavaScript"))) {
+            rsl = true;
+        }
+        return rsl;
     }
 
     @Override
