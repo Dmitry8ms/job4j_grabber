@@ -28,7 +28,9 @@ SELECT c.name company, count(p.id) n_personnel FROM person p
 JOIN company c 
 ON p.company_id = c.id 
 GROUP BY c.name
-HAVING count(p.id) = (SELECT max(cnt) FROM (
-SELECT p.company_id, count (*) cnt FROM person p
-GROUP BY p.company_id) AS tbl1) AS tbl2;
--- сам в шоке
+HAVING count(p.id) = (SELECT count(p.id) FROM person p
+GROUP BY p.company_id
+ORDER BY count(p.id) DESC
+LIMIT 1
+) AS max_person;
+
