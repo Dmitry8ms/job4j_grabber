@@ -10,17 +10,16 @@ public class GCDemo {
         final long totalMemory = ENVIRONMENT.totalMemory();
         final long maxMemory = ENVIRONMENT.maxMemory();
         System.out.println("=== Environment state ===");
-        System.out.printf("Free: %d%n", freeMemory / MB);
-        System.out.printf("Total: %d%n", totalMemory / MB);
-        System.out.printf("Max: %d%n", maxMemory / MB);
+        System.out.printf("Free: %d%n", freeMemory / KB);
+        System.out.printf("Total: %d%n", totalMemory / KB);
+        System.out.printf("Max: %d%n", maxMemory / KB);
     }
 
     public static void main(String[] args) {
         info();
         for (int i = 0; i < 10000; i++) {
-            new Person(i, "N" + i);
+            new User((long) i);
         }
-        info();
-        System.gc();
+
     }
 }
