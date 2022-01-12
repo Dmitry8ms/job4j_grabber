@@ -8,7 +8,7 @@
 User user = new User("aabb", "bbaabb");
 Итак, будем исходить из 64-разрядной системы у которой заголовок класса равен 12 Б, а ссылка 8 Б:
 Заголовок User - 12 Б
-ссылка на строковое поле - 8 Б
+ссылка на символьное поле - 8 Б
 Заголовок String - 12 Б
         private final char value[]; 8 Б (ссылочная переменная)
             Заголовок массива - 12 Б
@@ -17,7 +17,7 @@ User user = new User("aabb", "bbaabb");
         private final int offset; - 4 Б
         private final int count; - 4 Б
         private int hash; - 4 Б
-ссылка на 2-е строковое поле - 8 Б
+ссылка на 2-е символьное поле - 8 Б
 Заголовок String - 12 Б
         private final char value[]; 8 Б (ссылочная переменная)
             Заголовок массива - 12 Б
