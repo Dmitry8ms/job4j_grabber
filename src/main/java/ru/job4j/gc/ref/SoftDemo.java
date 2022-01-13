@@ -35,7 +35,7 @@ public class SoftDemo {
                 }
             }));
         }
-        //System.gc();
+        System.gc();
         int liveObject = 0;
         for (SoftReference<Object> ref : objects) {
             Object object = ref.get();
