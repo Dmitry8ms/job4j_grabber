@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 public class StrongDemo {
 
     public static void main(String[] args) throws InterruptedException {
-        //example1();
+        example1();
         example2();
     }
 
