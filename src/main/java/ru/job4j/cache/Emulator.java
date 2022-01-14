@@ -14,7 +14,10 @@ public class Emulator {
             key = console.nextLine();
             if (!key.equals("q")) {
                 String contents = fileCache.load(key);
-                System.out.printf("This is cache contents: %n%s%n", contents);
+                fileCache.put(key, contents);
+                System.out.printf("This is file contents: %n%s%n", contents);
+                System.out.println("____________________");
+                System.out.printf("This is cache contents: %n%s%n", fileCache.get(key));
             }
         }
         while (!key.equals("q"));

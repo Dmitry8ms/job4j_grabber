@@ -10,14 +10,17 @@ public abstract class AbstractCache<K, V> {
     protected final Map<K, SoftReference<V>> cache = new HashMap<>();
 
     public void put(K key, V value) {
+        if (value == null || value.equals("")) {
+            throw new IllegalArgumentException();
+        }
         cache.put(key, new SoftReference<V>(value));
     }
 
     public V get(K key) {
-        V result = null;
-        result = cache.getOrDefault(key, new SoftReference<>(null)).get();
+        V result = cache.getOrDefault(key, new SoftReference<>(null)).get();
         if (result == null) {
-            cache.put(key, new SoftReference<>(load(key)));
+            result = load(key);
+            put(key, result);
         }
         return result;
     }
