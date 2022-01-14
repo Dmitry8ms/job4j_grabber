@@ -8,15 +8,15 @@ public class Emulator {
         Scanner console = new Scanner(System.in);
         String cachingDir = console.nextLine();
         AbstractCache<String, String> fileCache = new DirFileCache(cachingDir);
-        String fileName;
+        String key;
         do {
             System.out.println("Please enter file to cache, or q for exit: ");
-            fileName = console.nextLine();
-            if (!fileName.equals("q")) {
-                String contents = fileCache.load(fileName);
+            key = console.nextLine();
+            if (!key.equals("q")) {
+                String contents = fileCache.load(key);
                 System.out.printf("This is cache contents: %n%s%n", contents);
             }
         }
-        while (!fileName.equals("q"));
+        while (!key.equals("q"));
     }
 }
