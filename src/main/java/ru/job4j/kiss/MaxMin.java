@@ -3,22 +3,30 @@ package ru.job4j.kiss;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.IntPredicate;
 
 public class MaxMin {
-    public <T> T max(List<T> list, Comparator<T> comparator) {
-        T max = list.get(0);
+
+    public static final IntPredicate MAX = (i) -> i < 0;
+    public static final IntPredicate MIN = (i) -> i > 0;
+
+    public static <T> T ext(List<T> list, Comparator<T> comparator, IntPredicate condition) {
+        T extr = list.get(0);
         for (int i = 1; i < list.size(); i++) {
             T toCompare = list.get(i);
-            if (comparator.compare(max, toCompare) < 0) {
-                max = toCompare;
+            if (condition.test(comparator.compare(extr, toCompare))) {
+                extr = toCompare;
             }
         }
-        return max;
+        return extr;
+    }
+
+    public <T> T max(List<T> list, Comparator<T> comparator) {
+        return ext(list, comparator, MAX);
     }
 
     public <T> T min(List<T> list, Comparator<T> comparator) {
-        var minComparator = comparator.reversed();
-        return max(list, minComparator);
+        return ext(list, comparator, MIN);
     }
 
     public static void main(String[] args) {
