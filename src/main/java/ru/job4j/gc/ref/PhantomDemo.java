@@ -22,6 +22,7 @@ public class PhantomDemo {
         public String get() {
             return name;
         }
+
     }
 
     private static class PhantomStorage {
